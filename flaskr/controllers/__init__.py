@@ -21,7 +21,10 @@ def create_app():
     load_dotenv()
     app = Flask(__name__,static_folder='../static', template_folder='../templates')
     app.config['SECRET_KEY'] = getenv('SECRET_KEY') #Encrypts cookies and session data 
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:MHwdnEVDKeNfH3uP7PnE@containers-us-west-164.railway.app:5455/railway'  
+
+    
     
     db.init_app(app)
 
