@@ -1,20 +1,18 @@
-import xlrd
-import matplotlib.pyplot as plt
 import math
 import scipy.optimize
 import numpy as np
 import pandas as pd
-from . import UPLOAD_FOLDER
+import io
+# from . import UPLOAD_FOLDER
+
+
 ##################################   DATA  CURATOR   #########################################
 def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
-    workbook = xlrd.open_workbook(path)
-    first_sheet = workbook.sheet_by_index(0)
-
-
-
+    workbook = pd.read_excel(path)
+    
     current_values = [] # WILL STORE THE VALUES FROM THE 'Imon [1]' COLUMN OF THE EXCEL FILE
 
-    for i in first_sheet.col_values(2,1):
+    for i in workbook.iloc[:,2]:
         current_values.append(i)
 
     current_values = current_values[20:] # Deletes the first points of the curve
@@ -24,7 +22,7 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
 
 
 
-    for v in first_sheet.col_values(1,1):
+    for v in workbook.iloc[:,1]:
         distance_values.append(v)
 
     distance_values = distance_values[20:] # also deletes the first points for the distance values
@@ -121,29 +119,37 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
 
     Kappa = '{}'.format("{:.5f}".format(popt))
     Chi2 = '{}'.format("{:.5f}".format(E_sigma))
-    temp = {'Kappa':[Kappa], 'Chi2':[Chi2]}
-    global temp_df 
-    # Make this dataframe accessible to the save_file() fn. so it automattically saves the kappa and chi2 along with the processed data.
-    temp_df = pd.DataFrame(temp)
     
+   # 2 IO string buffers that store the dataframes in-mem and are later trasnfered to the blob storage using Azure's SDK 
+    fitting_parameters = {'Kappa':[Kappa], 'Chi2':[Chi2]}
+    global fit_params_df
+    global fit_dataset_df
+    fit_params_df = pd.DataFrame(fitting_parameters)
+    fit_dataset_df = pd.DataFrame(final_dataset)
+    return fit_params_df, fit_dataset_df
+
+
+
+
+# Output for the fitting params   
+fit_params_output = io.StringIO()
+# Output for the dataset
+fit_dataset_output = io.StringIO()
+
 
     
-    #################################   THE END     ############################################
-def save_file(file_path):
-    # Save the simulated current values as well as the original experimental data in a single file.
-    # It will have 3 columns (and no index) L_data (distance), iT_data (experim. current values),
-    # iT_simulated (fitted current values after passing the functions designed by Cornut et al.)
-    df = pd.DataFrame(final_dataset)
-    df.to_csv(file_path+'_processed'+'.csv', encoding='utf-8', index=False)
-    temp_df.to_csv(file_path+'_params'+'.csv', encoding='utf-8', index=False)
+    #################################   THE END OF FITTING     ############################################
 
-def display_graph(filename):
-    # Build up the plot from the arrays in this script and save it alongside the other .xls and .csv
-    # files for later use. However, it will only be delivered as a static .png to the final .html
-    fig = plt.figure()
-    plt.scatter(L_data, iT_data, color='black', label='Experimental data')
-    plt.plot(L_data, iT_simulated, 'r', label = 'Fitted Data')
-    plt.legend()
-    fig.savefig(filename)
-    return fig
+
+""" This used to save a separate plot, back when Chart.js wasn't implemented """ 
+
+# def display_graph(filename):
+#     # Build up the plot from the arrays in this script and save it alongside the other .xls and .csv
+#     # files for later use. However, it will only be delivered as a static .png to the final .html
+#     fig = plt.figure()
+#     plt.scatter(L_data, iT_data, color='black', label='Experimental data')
+#     plt.plot(L_data, iT_simulated, 'r', label = 'Fitted Data')
+#     plt.legend()
+#     fig.savefig(filename)
+#     return fig
 

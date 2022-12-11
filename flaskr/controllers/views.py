@@ -1,17 +1,18 @@
 from crypt import methods
-import os
-from unicodedata import category
+from  os import getenv
+from dotenv import load_dotenv
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory
 from flask_login import  login_required, current_user
 from werkzeug.utils import secure_filename
-from . import UPLOAD_FOLDER
-from .import allowed_file
-from .cfit_secm import fit_data_Cornut, save_file, display_graph
+# from . import UPLOAD_FOLDER
+from .cfit_secm import fit_data_Cornut, fit_params_output, fit_dataset_output
 import pandas as pd
-import json
-from .models import User, Data
+from .models import Data
 from . import db
 from sqlalchemy import select
+from . import container_client, container_name, account
+from .id_generator import id_generator
+import pandas as pd
 
 
 # The endpoints our users can access are stored here
@@ -76,45 +77,73 @@ def get_params():
         except ValueError:
             flash("Please input a valid number!", category='error')
 
+        """ OLD WAY OF PROCESSING FILE UPLOAD LOCALLY"""
          # Process the file upload 
+        # try:
+        #     file = request.files['file']
+        #     if file and allowed_file(file.filename):
+        #         """ For local testing """
+        #         #file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), UPLOAD_FOLDER, secure_filename(file.filename)))
+                
+        #         """ Azure storage of files """
+        #         try:
+        #             container_client.upload_blob(file.filename, file) # upload the file to the container using the filename as the blob name
+        #             flash("File uploaded successfully!", category="success")
+        #         except Exception as e:
+        #             print(e)
+        #             flash("Ignoring duplicate files. Change the name of your file!", category='error')
+        #     else:
+        #         flash('File format not supported! Please follow guide on how to setup the .xls file at /home/guide.', category='error')
+        # except FileNotFoundError:
+        #         flash("No file selected. Plase provide a file to process!", category='error')
+        global filename
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        fileextension = filename.rsplit('.',1)[1]
+        Randomfilename = id_generator()
+        filename = Randomfilename + '.' + fileextension
         try:
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), UPLOAD_FOLDER, secure_filename(file.filename)))
-                flash("File uploaded successfully!", category="success")
-            else:
-                flash('File format not supported! Please follow guide on how to setup the .xls file at /home/guide.', category='error')
-        except FileNotFoundError:
-                flash("No file selected. Plase provide a file to process!", category='error')
+            container_client.create_blob_from_stream(container_name, filename, file)
+        except Exception as e:
+            print(e) 
+            pass
         
-        global path # make it accessible to fitdata function below
+        global user_upload_path # extend scope to function below
+        load_dotenv()
+        sas = getenv('SAS')
+        user_upload_path =  'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + filename + '?' + sas
         
-        # Get the name of the file provided by the user without the extension 
-        # for further use.
-        filename = str(file.filename)
-        first_file_part = filename.split('.')
-        final_name = first_file_part[0].split('/')
-        path = '../static/files/'+final_name[0]
-        global figure
-        figure = str('../static/files/'+final_name[0]+'.png')
-        # If everything works fine, call the fitting function with the file path as param + '.xls' 
-        # because the fitting script only takes the original dataset in .xls format.
+        """ Here we do the fitting of the remote data """
+        global processed_dataset
+        processed_dataset = title + '.csv' # Save it as a .csv TODO: make it a variable
+        global processed_params
+        processed_params = title + '_params' + '.csv' #TODO: make it a variable
+
+        # Dumb, I know but something in my folder structure wont let me export the variables as they are.
+
         try:
-            fit_data_Cornut(path+'.xls',float(rT), float(RG), float(iTinf), float(K))
-            # We then store the processed data in a separate file which is saved alongside the original dataset
-            save_file('../static/files/'+title)
+            # This should be 2 csv files one with the extracted params and one with the final dataset
+                # and they will be later stored alongside the original user's upload for storage and later query.
+            fit_params_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[0].to_csv(index='false', encoding='utf-8')
+            fit_dataset_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[1].to_csv(index='false', encoding='utf-8')
+            
+            try:
+                # the arguments should be read as (where to save them, under what name, which file)
+                # TODO: Problems may arise when people try to save file under the same name
+                container_client.create_blob_from_stream(container_name, processed_dataset, fit_dataset_output)
+                container_client.create_blob_from_stream(container_name, processed_params, fit_params_output)
+            except Exception as e:
+                print(e)
+                pass
             return redirect(url_for("views.fit_data"))
         except ValueError:
             flash("Please input a valid values for rT, iTinf, RG and Kappa!", category='error')
-        except FileNotFoundError:
-            flash("No file selected. Plase provide a file to process!", category='error')
         return render_template("get_params.html", user=current_user)
 
 @views.route('/fit_data', methods=['GET', 'POST'])
 @login_required
 def fit_data():
     if request.method == 'POST':
-        display_graph('../static/files/'+title) #TODO: Delete this functionality. Not useful anymore.
         return redirect(url_for("views.deliver_graph_content"))
     return render_template("fit_data.html", user=current_user)
 
@@ -123,8 +152,12 @@ def fit_data():
 @login_required
 def deliver_graph_content():
     # First we construct a dataframe with the processed data: 1 for the graph & 1 for the parameters of interest
-    data_to_represent = pd.read_csv('../static/files/'+title+'_processed.csv')
-    params = pd.read_csv('../static/files/'+title+'_params'+'.csv')
+    global url_for_dataset_processed
+    global url_for_params_processed
+    url_for_dataset_processed = 'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + processed_dataset
+    url_for_params_processed = 'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + processed_params
+    data_to_represent = pd.read_csv(url_for_dataset_processed)
+    params = pd.read_csv(url_for_params_processed)
 
     # Get the distance and currents arrays in separate variables and deliver them to Chart.js inside the 'result.html'
     # to be rendered. 
@@ -164,8 +197,8 @@ def query_results():
         search_title = request.form.get('archived_experiments')
         global data_to_represent, params
         #TODO: catch error in case someone doesnt choose a value from the dropdown. 
-        data_to_represent = pd.read_csv('../static/files/'+search_title+'_processed.csv')
-        params = pd.read_csv('../static/files/'+search_title+'_params'+'.csv')
+        data_to_represent = pd.read_csv(url_for_dataset_processed)
+        params = pd.read_csv(url_for_params_processed)
     # Get the distance and currents arrays in separate variables and deliver them to Chart.js inside the 'result.html'
         # to be rendered. 
         global distance_values, experiment_current_values, theoretical_current_values, Kappa, Chi2
