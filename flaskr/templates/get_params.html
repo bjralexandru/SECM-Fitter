@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block title %}SECM Fitter{% endblock %} 
+{% block content %}
+    <h1 align="center">SECM Fitter</h1>
+    <div class="graph" id="graph">
+      <div class="fit-plot" id="fit-plot">
+        <canvas id="myChart" width="900" height="600"></canvas>
+      </div>
+      <div class="form" id="form">
+        <form method="POST" class="parameters" id="parameters" enctype="multipart/form-data">
+            <input type="file" id="file" name="file" autocomplete="off"/>
+            <label for="title">Provide a title for your experiment(max. 200 chars):</label>
+            <input type="text" class="form-control" id="title" name="title" autocomplete="off"/>
+            <label for="rT">Electrode radius (in microns):</label>
+            <input type="text" class="form-control" id="rT" name="rT" autocomplete="off"/>
+            <label for="iTinf">Current at infinite distance(iT,inf in nA):</label>
+            <input type="text" class="form-control" id="iTinf" name="iTinf" autocomplete="off"/>
+            <label for="RG">RG value (between 3-15):</label>
+            <input type="text" class="form-control" id="RG" name="RG" autocomplete="off"/>
+            <label for="K">K-guess (eg. 1E-04):</label>
+            <input type="text" class="form-control" id="K" name="K" autocomplete="off"/>
+            <br/>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+    
+    
+    {% endblock %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='SECMfitter.ico') }}"/>
+    <link rel= "stylesheet" href="./static/style.css"/>
+    <title>{% block title %}SECM-Fitter{% endblock %}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://kit.fontawesome.com/5d08d787dd.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href= "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">   
+  </head>
+<body>
+    <nav class="navbar">
+            {% if user.is_authenticated %}
+            <a class="nav-item" id="getStarted" href="/How-It-Works">Get Started</a>
+            <a class="nav-item" id="home" href="/">Home</a>
+            <a class="nav-item" id="logout" href="/logout">Logout</a>
+            {% else %}
+            <a class="nav-item" id="login" href="/login">Login</a>
+            <a class="nav-item" id="signUp" href="/sign-up">Sign Up</a>
+            
+            {% endif %}
+    </nav>
+    <!-- Display flash messages. -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {%for category, message in messages %}
+      {%if category == 'error' %}
+      <!-- For any message stored in a flash function from Flask, display it in a dismissable alert
+      for which we have to build a close button as it doesn't come with batteries included. -->
+        <div class="alert alert-danger alter-dismissable fade show" role="alert">
+            {{message}}
+            <button type="button" class="close" data-dismiss="alert">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div> 
+        {% else %}
+        <!-- It's the same as above only that the background for the alert is now green, meaning success. -->
+        <div class="alert alert-success alter-dismissable fade show" role="alert">
+            {{message}}
+            <button type="button" class="close" data-dismiss="alert">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div> 
+        {% endif %}
+      {%endfor%}
+      {%endif%}
+    {% endwith %}
+    <div class="container">
+      <!-- Here you'll render all the views that you've built. -->
+      {% block content %}
+      
+      {% endblock %}
+    </div>
+    <script
+    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"
+  ></script>
+</body>
+</html>

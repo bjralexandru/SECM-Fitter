@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Login{%endblock%}
+
+{%block content%}
+    <div class="form-group login">
+        <h3 align="center">Login</h3>
+        <form method='POST'>
+            <label for="email">Email Address</label>
+            <div class="formField user">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" autocomplete="off"/>
+            </div>
+            <label for="password">Password</label>
+            <div class="formField password">
+                <input type="password" class="form-control" id="password" name="password"  placeholder="Enter password" autocomplete="off"/>
+            </div>
+            <div class="login-button-div">
+                <button type="submit" class="btn btn-primary login-button">Login</button>
+            </div>
+           
+        </form>
+    </div>
+    
+{%endblock%}

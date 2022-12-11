@@ -1,0 +1,30 @@
+{% extends "base.html" %} 
+{% block title %}SECM Fitter{% endblock %} 
+{% block content %}
+    <h1 align="center">Archived Experiments</h1>
+    <br/>
+    <div class="graph" id="graph">
+      <div class="fit-plot" id="fit-plot">
+        <canvas id="myChart" width="900" height="600"></canvas> 
+      </div>  
+        <br/>
+        <div class="buttons-choice" id="buttons-choice">
+            <form name="retrieve_data" method="POST" action="{{url_for('views.query_results')}}">
+                <select name="archived_experiments" id="archived_experiments">
+                    <option disabled hidden selected>Choose from past experiments</option> 
+                    {% for experiment in dropdown_list_items %}
+                      <option value="{{experiment}}">{{experiment}}</option>
+                    {% endfor %}
+                </select>
+                <br/>
+                <br/>
+                <button type="submit" id="load_archive" class="btn btn-primary" value="Load Data">Load Data</button>
+            </form>
+            
+        </div>
+    </div>
+
+   
+    
+    
+    {% endblock %}

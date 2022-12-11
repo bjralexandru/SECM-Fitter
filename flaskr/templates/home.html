@@ -1,0 +1,18 @@
+{% extends "base.html" %} 
+{% block title %}SECM Fitter{% endblock %} 
+{% block content %}
+    <div class="welcome-page">
+        <div class="fit-data-tab">
+        <form action="{{ url_for('views.get_params') }}" method="get">
+            <button name="fit_data_button" id="fit_data_button" type="submit" class="btn btn-primary">FIT DATA</button>
+        </form>
+        </div>
+        <div class="query-data-tab">
+        <form action="{{ url_for('views.query_data') }}" method="get">
+            <button name="query_data_button" id="query_data_button" type="submit" class="btn btn-primary">QUERY DATA</button>
+        </form> 
+        </div>
+    </div>
+    
+    
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "home.html" %} 
+{% block title %}SECM Fitter{% endblock %} 
+{% block content %}
+    <h1 align="center">SECM Fitter</h1>
+    <div class="graph" id="graph">
+      <div class="fit-plot" id="fit-plot">
+        <canvas id="myChart" width="900" height="600">
+        </canvas>   
+        <form method="POST" class="fit-data" id="fit-data">
+          <button type="submit" class="btn btn-primary">Fit Data</button>
+          <label for="K">K:</label>
+          <input type="text" class="K" id="K" autocomplete="off"/>
+          
+          <label for="chi2">Goodness of fit:</label>
+          <input type="text" class="chi2" id="chi2" name="chi2" autocomplete="off"/>
+        
+        </form>
+      
+      </div>
+    </div>
+
+{% endblock %}
+
+    

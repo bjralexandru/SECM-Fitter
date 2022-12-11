@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Sign-Up{%endblock%}
+
+{%block content%}
+
+    <div class="sign-up-frame">
+        <h3 align="center">Sign Up</h3>
+        <div class="form-group">
+            <form class="signup-form" method='POST'>
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email..." autocomplete="off"/>
+                <label for="firstName">First Name</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="What's your first name?" autocomplete="off"/>
+                <label for="lastName">Last Name</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="What's your last name?" autocomplete="off"/>
+                <label for="password1">Password</label>
+                <input type="password" class="form-control" id="password1" name="password1" placeholder="Choose a password..." autocomplete="off"/>
+                <label for="password2">Password (confirm)</label>
+                <input type="password" class="form-control" id="password2" name="password2" placeholder="Re-type the password..." autocomplete="off"/>
+                <br/>
+                <div class="signup-button-div">
+                    <button type="submit" class="btn btn-primary signup-button">Submit</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+{%endblock%}

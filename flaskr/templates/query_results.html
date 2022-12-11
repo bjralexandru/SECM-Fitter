@@ -1,0 +1,87 @@
+{% extends "base.html" %} 
+{% block title %}SECM Fitter{% endblock %} 
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <h1 align="center">SECM Fitter</h1>
+    <div class="graph" id="graph">
+      <div class="fit-plot" id="fit-plot">
+        <canvas id="myChart" width="900" height="600">
+          <script>
+            var ctx = document.getElementById("myChart").getContext("2d");
+            var lineChart = new Chart(ctx, {
+              type: "scatter",
+              data : {
+                labels: {{ labels | safe }},
+                datasets: [
+                {
+                  label: "Experimental Data",
+                  data: {{ values1 | safe }},
+                  fill: false,
+                  borderColor: "rgb(0, 0, 0)",
+                  lineTension: 0.5
+                },
+                {
+                  label: "Theoretical Fit",
+                  data: {{ values2 | safe }},
+                  fill: false,
+                  borderColor: "rgb(139, 0, 0)",
+                  lineTension: 0.5
+                }
+                ]
+              },
+              options: {
+                plugins: {
+                  legend: {
+                      display: true,
+                      position: 'top',
+                  }
+              },
+                scales : {
+                  x: {
+                    ticks: {
+                      stepSize: 0.5,
+                    },
+                    grid: {
+                      display: true, 
+                      lineWidth: 2,
+                     
+                    }
+                  },
+                  y: {
+                    ticks: {
+                      stepSize: 0.1,
+                    },
+                    grid: {
+                      display: true, 
+                      lineWidth: 2,
+                     
+                    }
+                  }
+                }
+            }
+            });
+          </script>
+        </canvas>
+        <br/>
+        <div class="result-fields">
+          <a href="/">
+            <button class="btn btn-primary">Back Home</button>
+          </a> 
+      
+          <label for="K">K:</label>
+          <input type="text" class="K" id="K" autocomplete="off"/>
+          
+          <label for="chi2">Goodness of fit:</label>
+          <input type="text" class="chi2" id="chi2" name="chi2" autocomplete="off"/>
+         <script>
+            document.getElementById('K').value = {{ Kappa }}
+            document.getElementById('chi2').value = {{ Chi2 }}
+         </script>
+        </div>
+        
+      </div>
+    </div>
+    
+
+{% endblock %}
