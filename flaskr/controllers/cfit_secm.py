@@ -3,12 +3,22 @@ import scipy.optimize
 import numpy as np
 import pandas as pd
 import io
+import os
+import requests
+
 # from . import UPLOAD_FOLDER
 
 
 ##################################   DATA  CURATOR   #########################################
 def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
-    workbook = pd.read_excel(path)
+   # Workaround to let pandas read data directly from url
+
+    r = requests.get(path)
+    open('temp.xls', 'wb').write(r.content)
+
+    workbook = pd.read_excel('temp.xls')
+    os.remove('temp.xls')
+    
     
     current_values = [] # WILL STORE THE VALUES FROM THE 'Imon [1]' COLUMN OF THE EXCEL FILE
 

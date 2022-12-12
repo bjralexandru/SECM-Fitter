@@ -1,19 +1,25 @@
-from crypt import methods
-from  os import getenv
-from dotenv import load_dotenv
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory
 from flask_login import  login_required, current_user
 from werkzeug.utils import secure_filename
 # from . import UPLOAD_FOLDER
-from .cfit_secm import fit_data_Cornut, fit_params_output, fit_dataset_output
+from .cfit_secm import fit_data_Cornut
 import pandas as pd
 from .models import Data
 from . import db
 from sqlalchemy import select
-from . import container_client, container_name, account
 from .id_generator import id_generator
 import pandas as pd
+from azure.storage.blob import BlobServiceClient, generate_account_sas, ResourceTypes, AccountSasPermissions
+from . import blob_service_client
+from datetime import datetime, timedelta
+from os import getenv
+from dotenv import load_dotenv
 
+
+global container_name
+global account
+container_name = getenv('CONTAINER_NAME')
+storage_account_name = getenv('STORAGE_ACCOUNT_NAME')
 
 # The endpoints our users can access are stored here
 
@@ -84,34 +90,26 @@ def get_params():
         #     if file and allowed_file(file.filename):
         #         """ For local testing """
         #         #file.save(os.path.join(os.path.abspath(os.path.dirname(__file__)), UPLOAD_FOLDER, secure_filename(file.filename)))
-                
-        #         """ Azure storage of files """
-        #         try:
-        #             container_client.upload_blob(file.filename, file) # upload the file to the container using the filename as the blob name
-        #             flash("File uploaded successfully!", category="success")
-        #         except Exception as e:
-        #             print(e)
-        #             flash("Ignoring duplicate files. Change the name of your file!", category='error')
-        #     else:
-        #         flash('File format not supported! Please follow guide on how to setup the .xls file at /home/guide.', category='error')
-        # except FileNotFoundError:
-        #         flash("No file selected. Plase provide a file to process!", category='error')
+
+        """ NEW WAY OF STORING FILES IN THE CLOUD """      
         global filename
         file = request.files['file']
         filename = secure_filename(file.filename)
+        # Extract extensions and modify the initial upload's name to a random string
         fileextension = filename.rsplit('.',1)[1]
         Randomfilename = id_generator()
         filename = Randomfilename + '.' + fileextension
+        # Establish connection to the remote blob on Azure Portal and upload the file
         try:
-            container_client.create_blob_from_stream(container_name, filename, file)
+            global blob_client
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=filename)
+            blob_client.upload_blob(file)
         except Exception as e:
             print(e) 
             pass
-        
-        global user_upload_path # extend scope to function below
-        load_dotenv()
-        sas = getenv('SAS')
-        user_upload_path =  'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + filename + '?' + sas
+
+        # This link is used to access the file having a random name, but the user afterwards selects his own title.
+        user_upload_path =  'http://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + filename
         
         """ Here we do the fitting of the remote data """
         global processed_dataset
@@ -122,16 +120,15 @@ def get_params():
         # Dumb, I know but something in my folder structure wont let me export the variables as they are.
 
         try:
-            # This should be 2 csv files one with the extracted params and one with the final dataset
+            # These should be 2 csv files one with the extracted params and one with the final dataset
                 # and they will be later stored alongside the original user's upload for storage and later query.
             fit_params_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[0].to_csv(index='false', encoding='utf-8')
             fit_dataset_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[1].to_csv(index='false', encoding='utf-8')
             
             try:
-                # the arguments should be read as (where to save them, under what name, which file)
                 # TODO: Problems may arise when people try to save file under the same name
-                container_client.create_blob_from_stream(container_name, processed_dataset, fit_dataset_output)
-                container_client.create_blob_from_stream(container_name, processed_params, fit_params_output)
+                blob_client.upload_blob(fit_dataset_output)
+                blob_client.upload_blob(fit_params_output)
             except Exception as e:
                 print(e)
                 pass
@@ -154,7 +151,7 @@ def deliver_graph_content():
     # First we construct a dataframe with the processed data: 1 for the graph & 1 for the parameters of interest
     global url_for_dataset_processed
     global url_for_params_processed
-    url_for_dataset_processed = 'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + processed_dataset
+    url_for_dataset_processed = 'http://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + processed_dataset
     url_for_params_processed = 'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + processed_params
     data_to_represent = pd.read_csv(url_for_dataset_processed)
     params = pd.read_csv(url_for_params_processed)

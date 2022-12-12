@@ -3,16 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path, getenv
 from flask_login import LoginManager
 from dotenv import load_dotenv
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, generate_account_sas, ResourceTypes, AccountSasPermissions
+from datetime import datetime, timedelta
 
-# global UPLOAD_FOLDER
-global ALLOWED_EXTENSIONS
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+global ALLOWED_EXTENSIONS
 ALLOWED_EXTENSIONS = {'xls', 'txt', 'csv'}
 
 """ STORAGE FOR LOCAL TESTING """
+# global UPLOAD_FOLDER
 # UPLOAD_FOLDER = '../static/files'
 
 # Function to load the .env configuration:
@@ -25,30 +26,27 @@ def create_app():
     app = Flask(__name__,static_folder='../static', template_folder='../templates')
     app.config['SECRET_KEY'] = getenv('SECRET_KEY') #Encrypts cookies and session data 
     """ DB FOR LOCAL TESTING """
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     
     """ DB FOR PRODUCTION """
-    app.config['SQLALCHEMY_DATABASE_URI'] = getenv('PSQL_URI')  
+    # app.config['SQLALCHEMY_DATABASE_URI'] = getenv('PSQL_URI')  
 
     """ AZURE BLOB STORAGE CONNECTION """
-    global container_name, account
-    account = getenv('ACCOUNT_NAME')
-    connect_str = getenv('AZURE_STORAGE_CONNECTION_STRING') # retrieve secret connection string from env variables
-    container_name = "fitting" # container name in which all experiment data will be stored
+    global container_name, account_name, account_key, account_url
+    storage_account_name = getenv('STORAGE_ACCOUNT_NAME')
+    container_name = getenv('CONTAINER_NAME') # container name in which all experiment data will be stored
+    account_key=getenv('ACCOUNT_KEY')
+    account_url = getenv('ACCOUNT_URL')
+    global blob_service_client
+    sas_token = generate_account_sas(
+                    account_name=storage_account_name,
+                    account_key=account_key,
+                    resource_types=ResourceTypes(service=True, container=True, object=True),
+                    permission=AccountSasPermissions(read=True),
+                    expiry=datetime.utcnow() + timedelta(hours=1))
 
-
-    blob_service_client = BlobServiceClient.from_connection_string(conn_str=connect_str) # Instance of the Blob Client that established the transfer of data
-    global container_client
-
-    try:     
-        container_client = blob_service_client.get_container_client(container=container_name) # Glue togheter the container declared locally to the remote one
-        container_client.get_container_properties() # This will throw an error, which we can catch, in case that the remote container doesn't exist 
-    except Exception as e:
-        print(e)
-        print(f"Container doesn't exist. Creating your new \'{container_name}\' container ...")
-        container_client = blob_service_client.create_container(container_name)
-
-    
+    blob_service_client = BlobServiceClient(account_url=account_url, credential=sas_token)
+        
     
     db.init_app(app)
 
