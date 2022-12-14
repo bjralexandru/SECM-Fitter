@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Getting Started{%endblock%}
+{% block title %}SECM Fitter{%endblock%}
 
 {%block content%}
-    <div class="how-it-works">
-        <div class="col1">
-            <h2> What is SECM Fitter? </h1>
+<div class="howitworks">
+    <section class="col1">
+        <h2> What is SECM Fitter? </h1>
         <p>SF is intended to be a one stop service for your Scanning Electrochemical Microscopy (SECM) approach curve fitting.
             It uses <em><a href="https://doi.org/10.1016/j.jelechem.2007.09.021" class="cornut-doi">Cornut, et. al</a></em>'s fitting equation in order to extract the heterogeneous rate constant from your 
             approach curve experiments. Additionally, it should exempt you from having multiple excel sheets, each one with a 
@@ -13,17 +13,23 @@
         </p>
         <p> My hope is that this project will turn into an open-source database containing as much data as possible about SECM 
             experiments, and this will lead to an increase in transparency and reproducibility in future studies.</p>
-        </div>
-        <div class="col2">
-            <h2> How to get started fitting your experiment </h2>
-            <p>Watch the video below, download the dummy-data provided and start fitting.</p>
-            <video class="usage-tutorial" width="600" height="440" controls >
-                <source src="../static/GettingStarted-1.mp4" type="video/mp4">
-                Your browser doesn't support the video tag.
-            </video>
-            <button type="submit" id="dummy-data" class="btn btn-primary dummy-data" value="Sample Data">Sample Data</button>
-        </div>
-    </div>
-    <p> All suggestions and complaints should be forwarded to bjalexandru@gmail.com. Thank you for trying out this project!</p>
-    
+    </section>
+    <section class="col2">
+        <h2> How to get started fitting your experiment </h2>
+        <p>Watch the video below, download the dummy-data provided and start fitting.</p>
+            
+        <p>For a perfect fit with the dummy data, you should use the following parameters values:</p>
+        <ul>
+            <li>rT: 12.5</li>
+            <li>iTinf: -0.09</li>
+            <li>RG: 5</li>
+            <li>K: 2</li>
+        </ul>
+        <button type="submit" id="dummy-data" class="btn btn-primary dummy-data" value="Sample Data">Sample Data</button>
+        <video class="usage-tutorial" width="600" height="440" controls >
+            <source src="../static/GettingStarted-1.mp4" type="video/mp4">
+        </video>
+    </section>
+</div>  
+ <p class="closing-remark"> All suggestions and complaints should be forwarded to bjalexandru@gmail.com. Thank you for trying out this project!</p>
 {%endblock%}

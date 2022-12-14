@@ -358,10 +358,31 @@ input.form-control:not(.graph input){
     margin-bottom: 20px;
 }
 
-.result-fields {
+.result-fields, .query-result-fields {
     color: white;
     font-weight: bold;
+    float:right;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    background: url(/flaskr/static/signup-wallpaper.png);
+    height: 300px;
+    width: 300px; 
+    padding: 2rem;
 }
+
+.result-fields input {
+    text-align: center;
+    font-weight: bold;
+}
+
+.query-result-fields input {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
 
 option {
     color: rgb(0, 0, 0);
@@ -369,77 +390,104 @@ option {
     
 }
 
-.how-it-works {
-    margin-top: 40vh;
-    margin-left: auto;
-    margin-right: auto;
-    width: 1200px;
-    height: 800px;
+.howitworks {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 50px;
-    color: white;   
+    grid-template-columns: 400px 800px;
+    height: 80vh;
+    width: 1200px;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-left: 6rem;
+    margin-right: auto;
 }
-
-.how-it-works .col1{
+.col1{
     font-family: Helvetica, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     text-align: justify;
+    color: white;
+    font-weight: bold;
+    height: 600px;
+    width: 400px;
 
 }
 
-.how-it-works .col1 h2{
+.col2 {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: justify;
+    color: white;
+    font-weight: bold;
+    height: 600px;
+    width: 800px;
+
+}
+
+.col1 h2 {
     font-size: 28px;
     text-transform: uppercase;
     font-weight: bold;
-    letter-spacing: 1px;
     letter-spacing: 2px;
-
+    justify-content: space-between;
 }
 
-.how-it-works .col1 p{
-    font-size: 18px;
+.col2 h2 {
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+    justify-content: space-between;
+}
+
+.col1 p{
+    margin-top: 3rem;
+    font-size: 17px;
     font-weight: bold;
     letter-spacing: 1px;
 
 }
 
-.how-it-works .col1 p em a{
+.col1 p em a{
    color: rgb(238, 255, 0);
    text-shadow: 0.7px 0.7px rgb(0, 0, 0);
    text-decoration: none;
 }
 
-.how-it-works .col2 {
+
+
+.col2 ul{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    list-style: none;
+    gap: 2rem;
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
 }
 
-.how-it-works .col2 video {
+
+.col2 video {
     margin-bottom: 30px;
 }
 
-.how-it-works .btn {
+.btn {
     background-color: green;
     border: none;
 }
 
-.how-it-works .col2 h2 {
-    font-size: 20px;
-    text-transform: uppercase;
+.closing-remark {
+    margin-left: 6rem;
+    color: white;
     font-weight: bold;
-    letter-spacing: 1px;
-    letter-spacing: 2px;
-    margin-bottom: 15px;
-}
-
-.how-it-works .col2 p {
-    font-size: 16px;
-    font-weight: bold;
+    text-align: center;
+    font-size: 17px;
 }
