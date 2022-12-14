@@ -25,11 +25,12 @@ def create_app():
     load_dotenv()
     app = Flask(__name__,static_folder='../static', template_folder='../templates')
     app.config['SECRET_KEY'] = getenv('SECRET_KEY') #Encrypts cookies and session data 
+    
     """ DB FOR LOCAL TESTING """
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     
     """ DB FOR PRODUCTION """
-    # app.config['SQLALCHEMY_DATABASE_URI'] = getenv('PSQL_URI')  
+    app.config['SQLALCHEMY_DATABASE_URI'] = getenv('PSQL_URI')  
 
     """ AZURE BLOB STORAGE CONNECTION """
     global container_name, account_name, account_key, account_url

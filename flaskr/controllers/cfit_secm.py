@@ -122,7 +122,7 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
     Kappa = '{}'.format("{:.5f}".format(popt))
     Chi2 = '{}'.format("{:.5f}".format(E_sigma))
     
-   # 2 IO string buffers that store the dataframes in-mem and are later trasnfered to the blob storage using Azure's SDK 
+   # 2 dataframes stored in-mem variables, which are later transfered to the blob storage using Azure's SDK 
     fitting_parameters = {'Kappa':[Kappa], 'Chi2':[Chi2]}
     global fit_params_df
     global fit_dataset_df
@@ -130,15 +130,6 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
     fit_dataset_df = pd.DataFrame(final_dataset)
     print("Finished fitting.")
     return [fit_params_df, fit_dataset_df]
-
-
-
-
-# Output for the fitting params   
-fit_params_output = io.StringIO()
-# Output for the dataset
-fit_dataset_output = io.StringIO()
-
 
     
     #################################   THE END OF FITTING     ############################################
