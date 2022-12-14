@@ -25,8 +25,12 @@
             <li>RG: 5</li>
             <li>K: 2</li>
         </ul>
-        <button type="button" onclick="https://docs.google.com/spreadsheets/d/1rczXjmokDewshhFGPRuS_y48juRv6TNM/edit?usp=sharing&ouid=112402063325546257523&rtpof=true&sd=true" 
-            id="dummy-data" class="btn btn-primary dummy-data" value="Sample Data">Sample Data</button>
+        <button type="button" target="_blank" id="dummy-data" class="btn btn-primary dummy-data" value="Sample Data">Sample Data</button>
+        <script type="text/javascript">
+            document.getElementById("dummy-data").onclick = function () {
+                window.open("https://ufile.io/syz727g0", '_blank');
+            };
+        </script>
         <video class="usage-tutorial" width="600" height="440" controls >
             <source src="../static/GettingStarted-1.mp4" type="video/mp4">
         </video>
