@@ -42,7 +42,7 @@ def create_app():
                     account_name=storage_account_name,
                     account_key=account_key,
                     resource_types=ResourceTypes(service=True, container=True, object=True),
-                    permission=AccountSasPermissions(read=True),
+                    permission=AccountSasPermissions(read=True, write=True, list=True),
                     expiry=datetime.utcnow() + timedelta(hours=1))
 
     blob_service_client = BlobServiceClient(account_url=account_url, credential=sas_token)

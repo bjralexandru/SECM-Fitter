@@ -12,12 +12,13 @@ import requests
 ##################################   DATA  CURATOR   #########################################
 def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
    # Workaround to let pandas read data directly from url
+    if path:
+        r = requests.get(path)
+        open('temp.xls', 'wb').write(r.content)
 
-    r = requests.get(path)
-    open('temp.xls', 'wb').write(r.content)
-
-    workbook = pd.read_excel('temp.xls')
-    os.remove('temp.xls')
+        workbook = pd.read_excel('temp.xls')
+    else:
+        print("Wrong path!")
     
     
     current_values = [] # WILL STORE THE VALUES FROM THE 'Imon [1]' COLUMN OF THE EXCEL FILE
@@ -108,17 +109,8 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
 
     ############################  PRINT THE RESULTS     ########################################
 
-    print('Kappa = {}'.format("{:.5f}".format(popt)),'\nCovariance = {}'.format(pcov[0]), '\nE_sigma = {}'.format("{:.5f}".format(E_sigma)))
+    # print('Kappa = {}'.format("{:.5f}".format(popt)),'\nCovariance = {}'.format(pcov[0]), '\nE_sigma = {}'.format("{:.5f}".format(E_sigma)))
 
-    ############################    FIGURE BUILDING     ########################################
-    # fig = plt.figure(figsize=(10,8))
-    # plt.plot(L_data, iT_data, 'k', label = 'Experimental Data')
-    # plt.plot(L_data, r(L_data, K), 'b',label = 'First guess for Kappa = {}'.format(K))
-    # plt.plot(L_data, r(L_data, popt),'y',label = 'Cornut Fit for Kappa = {}\nWith an estimated error of {} '.format("{:.4f}".format(popt),"{:.5f}".format(E_sigma)))
-    # plt.title('Approach Curve Fitting')
-    # plt.legend()
-    # plt.show()
-   
     global iT_simulated
     iT_simulated = r(L_data, popt)
 
@@ -136,7 +128,8 @@ def fit_data_Cornut(path, electrode_radius, Rg, iT_inf, K):
     global fit_dataset_df
     fit_params_df = pd.DataFrame(fitting_parameters)
     fit_dataset_df = pd.DataFrame(final_dataset)
-    return fit_params_df, fit_dataset_df
+    print("Finished fitting.")
+    return [fit_params_df, fit_dataset_df]
 
 
 
@@ -150,16 +143,4 @@ fit_dataset_output = io.StringIO()
     
     #################################   THE END OF FITTING     ############################################
 
-
-""" This used to save a separate plot, back when Chart.js wasn't implemented """ 
-
-# def display_graph(filename):
-#     # Build up the plot from the arrays in this script and save it alongside the other .xls and .csv
-#     # files for later use. However, it will only be delivered as a static .png to the final .html
-#     fig = plt.figure()
-#     plt.scatter(L_data, iT_data, color='black', label='Experimental data')
-#     plt.plot(L_data, iT_simulated, 'r', label = 'Fitted Data')
-#     plt.legend()
-#     fig.savefig(filename)
-#     return fig
 

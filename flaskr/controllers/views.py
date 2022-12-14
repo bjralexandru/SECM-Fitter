@@ -14,6 +14,7 @@ from . import blob_service_client
 from datetime import datetime, timedelta
 from os import getenv
 from dotenv import load_dotenv
+import os
 
 
 global container_name
@@ -102,33 +103,43 @@ def get_params():
         # Establish connection to the remote blob on Azure Portal and upload the file
         try:
             global blob_client
-            blob_client = blob_service_client.get_blob_client(container=container_name, blob=filename)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=str(filename))
             blob_client.upload_blob(file)
         except Exception as e:
             print(e) 
-            pass
+            
 
         # This link is used to access the file having a random name, but the user afterwards selects his own title.
-        user_upload_path =  'http://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + filename
+        user_upload_path =  'https://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + filename
         
         """ Here we do the fitting of the remote data """
         global processed_dataset
         processed_dataset = title + '.csv' # Save it as a .csv TODO: make it a variable
         global processed_params
         processed_params = title + '_params' + '.csv' #TODO: make it a variable
-
+        print("User data uploaded successfully!")
         # Dumb, I know but something in my folder structure wont let me export the variables as they are.
 
         try:
+            print("Got to fitting the data")
+            print(f"url:{user_upload_path}")
             # These should be 2 csv files one with the extracted params and one with the final dataset
                 # and they will be later stored alongside the original user's upload for storage and later query.
-            fit_params_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[0].to_csv(index='false', encoding='utf-8')
-            fit_dataset_output = fit_data_Cornut(user_upload_path,float(rT), float(RG), float(iTinf), float(K))[1].to_csv(index='false', encoding='utf-8')
-            
+            params = fit_data_Cornut(str(user_upload_path),float(rT), float(RG), float(iTinf), float(K))[0]
+            dataset = fit_data_Cornut(str(user_upload_path),float(rT), float(RG), float(iTinf), float(K))[1]
+            print("Go to the uploading of results")
             try:
                 # TODO: Problems may arise when people try to save file under the same name
-                blob_client.upload_blob(fit_dataset_output)
-                blob_client.upload_blob(fit_params_output)
+                print("Got to the params upload")
+                # blob_client must be know beforehand which file is it going to upload 
+                blob_client = blob_service_client.get_blob_client(container=container_name, blob=processed_params)
+                blob_client.upload_blob(params.to_csv(index=False))
+                print("Uploaded first")
+                # blob_client must be know beforehand which file is it going to upload
+                blob_client = blob_service_client.get_blob_client(container=container_name, blob=processed_dataset)
+                blob_client.upload_blob(dataset.to_csv(index=False))
+                os.remove('temp.xls')
+                print("Uploaded second")
             except Exception as e:
                 print(e)
                 pass
@@ -151,10 +162,11 @@ def deliver_graph_content():
     # First we construct a dataframe with the processed data: 1 for the graph & 1 for the parameters of interest
     global url_for_dataset_processed
     global url_for_params_processed
-    url_for_dataset_processed = 'http://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + processed_dataset
-    url_for_params_processed = 'http://'+ account + '.blob.core.windows.net/' + container_name + '/' + processed_params
-    data_to_represent = pd.read_csv(url_for_dataset_processed)
-    params = pd.read_csv(url_for_params_processed)
+    url_for_dataset_processed = 'https://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + processed_dataset
+    url_for_params_processed = 'https://'+ storage_account_name + '.blob.core.windows.net/' + container_name + '/' + processed_params
+    
+    data_to_represent = pd.read_csv(str(url_for_dataset_processed))
+    params = pd.read_csv(str(url_for_params_processed))
 
     # Get the distance and currents arrays in separate variables and deliver them to Chart.js inside the 'result.html'
     # to be rendered. 
