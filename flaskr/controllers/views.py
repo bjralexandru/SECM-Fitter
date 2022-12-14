@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import  login_required, current_user
 from werkzeug.utils import secure_filename
-# from . import UPLOAD_FOLDER
 from .cfit_secm import fit_data_Cornut
 import pandas as pd
 from .models import Data
@@ -9,9 +8,7 @@ from . import db
 from sqlalchemy import select
 from .id_generator import id_generator
 import pandas as pd
-from azure.storage.blob import BlobServiceClient, generate_account_sas, ResourceTypes, AccountSasPermissions
 from . import blob_service_client
-from datetime import datetime, timedelta
 from os import getenv
 from dotenv import load_dotenv
 import os
@@ -19,6 +16,7 @@ import os
 
 global container_name
 global account
+load_dotenv()
 container_name = getenv('CONTAINER_NAME')
 storage_account_name = getenv('STORAGE_ACCOUNT_NAME')
 
