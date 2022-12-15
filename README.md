@@ -3,10 +3,12 @@
 <h3> A one-stop solution for all your Scanning Electrochemical Microscopy approach curve experiments</h3>
 
 [![Made with - Python](https://img.shields.io/badge/Made_with-Python-2ea44f?style=for-the-badge&logo=Python&logoColor=black)](https://www.python.org/)  [![Made with - Chart.js](https://img.shields.io/badge/Made_with-Chart.js-purple?style=for-the-badge&logo=Chart.js&logoColor=black)](https://www.chartjs.org/)
-[![Made with - Flask](https://img.shields.io/badge/Made_with-Flask-blue?style=for-the-badge&logo=Flask&logoColor=black)](https://flask.palletsprojects.com/en/2.2.x/)
+[![Made with - Flask](https://img.shields.io/badge/Made_with-Flask-blue?style=for-the-badge&logo=Flask&logoColor=black)](https://flask.palletsprojects.com/en/2.2.x/) [![Build - Live](https://img.shields.io/badge/Build-Live-2ea44f?style=for-the-badge&logo=Live&logoColor=Green)](https://secmfitter-production-3804.up.railway.app)
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitLab last commit](https://badgen.net/gitlab/last-commit/NickBusey/HomelabOS/)](https://gitlab.com/NickBusey/HomelabOS/-/commits)
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) 
+
+### [NEW!] Project is now live at [https://secmfitter-production-3804.up.railway.app](https://secmfitter-production-3804.up.railway.app).
 
 With this project, I intended to build a tool that we can use within our lab for the experiments concerning the approach curves obtained with the Scanning Electrochemical Microscopy instrumentation.
 
