@@ -7,7 +7,8 @@
 
  
 
-### [NEW!] Project is now live at [https://secmfitter-production-3804.up.railway.app](https://secmfitter-production-3804.up.railway.app).
+### ~~[NEW!] Project is now live at [https://secmfitter-production-3804.up.railway.app](https://secmfitter-production-3804.up.railway.app).~~
+## [NEW-2] To avoid cloud costs I've taken down the deployment, but can spin it up anytime. Just ask :) 
 
 With this project, I intended to build a tool that we can use within our lab for the experiments concerning the approach curves obtained with the Scanning Electrochemical Microscopy instrumentation.
 
