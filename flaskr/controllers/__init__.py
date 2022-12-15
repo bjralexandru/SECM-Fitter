@@ -33,7 +33,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = getenv('PSQL_URI')  
 
     """ AZURE BLOB STORAGE CONNECTION """
-    global container_name, account_name, account_key, account_url
+    global container_name, account_key, account_url
     storage_account_name = getenv('STORAGE_ACCOUNT_NAME')
     container_name = getenv('CONTAINER_NAME') # container name in which all experiment data will be stored
     account_key=getenv('ACCOUNT_KEY')
