@@ -41,6 +41,8 @@ The function used for the generation of the theoretical current values comes fro
 
 As of now, it uses a basic SQLite database for the user's information and the .xls/.csv files are saved locally. I'm currently searching for solutions to put it live either on Heroku or Railway and I'll switch to PostgreSQL for the user's info and maybe a blob storage or bucket for the files.
 
+❗🔥 <em>[LE] Managed to transfer the user's log-in info to a PostgreSQL DB provided on the Railway hosting platform, and the processing and storage of files was achieved on an Azure Blob Storage using a free-plan which I closed to avoid triggerind supplementary costs.</em>
+
 <h3> Help and feedback are very much appreciated! </h3>
 
 
